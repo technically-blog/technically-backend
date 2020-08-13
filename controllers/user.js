@@ -103,6 +103,10 @@ exports.photo = (req, res) => {
                 error: 'User not found'
             })
         }
+        if(!user.photo.data) {
+            console.log(__dirname);
+            return res.sendFile(__dirname + '/static/default-profile.png');
+        }
         if(user.photo.data) {
             res.set('Content-Type', user.photo.contentType);
             return res.send(user.photo.data);
