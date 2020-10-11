@@ -41,7 +41,7 @@ exports.preSignup = (req, res) => {
                     <p>${process.env.CLIENT_URL}/auth/account/activate/${token}</p>
                     <hr />
                     <p> This email may contain sensitive information</p>
-                    <p>https://technically.blog</p>`
+                    <p>https://inbrief.dev</p>`
             };
 
             sgMail.send(emailData).then(sent => {
@@ -204,7 +204,7 @@ exports.forgotPassword = (req, res) => {
                 <p>${process.env.CLIENT_URL}/auth/password/reset/${token}</p>
                 <hr />
                 <p> This email may contain sensitive information</p>
-                <p>https://technically.blog</p>`
+                <p>https://inbrief.dev</p>`
         };
 
         // db

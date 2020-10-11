@@ -15,7 +15,7 @@ exports.contactForm = (req, res) => {
             <Sender message: ${message}</p>
             <hr />
             <p> This email may contain sensitive information</p>
-            <p>https://technically.blog</p>`
+            <p>https://inbrief.dev</p>`
     };
     console.log('SENDING MAIL...');
     sgMail.send(emailData, (error, result) => {
