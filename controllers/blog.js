@@ -20,11 +20,17 @@ exports.create = (req, res) => {
             });
         }
 
-        const { title, body, categories, tags } = fields;
+        const { title, gist, body, categories, tags } = fields;
 
         if (!title || !title.length) {
             return res.status(400).json({
                 error: 'title is required'
+            });
+        }
+
+        if (!gist || gist.length > 160) {
+            return res.status(400).json({
+                error: 'Either gist is not entered or is greater then required size!'
             });
         }
 
@@ -49,7 +55,7 @@ exports.create = (req, res) => {
         let blog = new Blog();
         blog.title = title;
         blog.body = body;
-        blog.excerpt = smartTrim(body, 320, ' ', ' ...');
+        blog.gist = gist;
         blog.slug = slugify(title).toLowerCase();
         blog.mtitle = `${title} | ${process.env.APP_NAME}`;
         blog.mdesc = stripHtml(body.substring(0, 160));
@@ -57,6 +63,12 @@ exports.create = (req, res) => {
         // categories and tags
         let arrayOfCategories = categories && categories.split(',');
         let arrayOfTags = tags && tags.split(',');
+
+        if(!files.photo) {
+            return res.status(400).json({
+                error: 'Adding featured image is mandatory!'
+            });
+        }
 
         if (files.photo) {
             if (files.photo.size > 10000000) {
@@ -107,7 +119,7 @@ exports.list = (req, res) => {
         .populate('categories', '_id name slug')
         .populate('tags', '_id name slug')
         .populate('postedBy', '_id name username')
-        .select('_id title slug excerpt categories tags postedBy createdAt updatedAt')
+        .select('_id title slug gist categories tags postedBy createdAt updatedAt')
         .exec((err, data) => {
             if (err) {
                 return res.json({
@@ -133,7 +145,7 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .select('_id title slug excerpt categories tags postedBy createdAt updatedAt')
+        .select('_id title slug gist categories tags postedBy createdAt updatedAt')
         .exec((err, data) => {
             if (err) {
                 return res.json({
@@ -171,7 +183,7 @@ exports.read = (req, res) => {
         .populate('categories', '_id name slug')
         .populate('tags', '_id name slug')
         .populate('postedBy', '_id name username email about')
-        .select('_id title body slug mtitle mdesc categories tags postedBy createdAt updatedAt')
+        .select('_id title body gist slug mtitle mdesc categories tags postedBy createdAt updatedAt')
         .exec((err, data) => {
             if (err) {
                 return res.json({
@@ -212,7 +224,7 @@ exports.update = (req, res) => {
         form.parse(req, (err, fields, files) => {
             if (err) {
                 return res.status(400).json({
-                    error: 'Image could not upload'
+                    error: 'Error while uploading Image. Please try again!'
                 });
             }
 
@@ -220,10 +232,18 @@ exports.update = (req, res) => {
             oldBlog = _.merge(oldBlog, fields);
             oldBlog.slug = slugBeforeMerge;
 
-            const { body, desc, categories, tags } = fields;
+            const { gist, body, desc, categories, tags } = fields;
+            if (!gist || gist.length > 160) {
+                return res.status(400).json({
+                    error: 'Either gist is not entered or is greater then required size!'
+                });
+            }
+
+            if(gist) {
+                oldBlog.gist = gist;
+            }
 
             if (body) {
-                oldBlog.excerpt = smartTrim(body, 320, ' ', ' ...');
                 oldBlog.desc = stripHtml(body.substring(0, 160));
             }
 
@@ -281,7 +301,7 @@ exports.listRelated = (req, res) => {
     Blog.find({ _id: { $ne: _id }, categories: { $in: categories } })
         .limit(limit)
         .populate('postedBy', '_id name username profile')
-        .select('title slug excerpt postedBy createdAt updatedAt')
+        .select('title slug gist postedBy createdAt updatedAt')
         .exec((err, blogs) => {
             if (err) {
                 return res.status(400).json({

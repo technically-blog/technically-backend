@@ -12,6 +12,15 @@ const categorySchema = new mongoose.Schema(
             type: String,
             unique: true,
             index: true
+        },
+        image: {
+            data: Buffer,
+            contentType: String
+        },
+        info: {
+            type: String,
+            required: true,
+            max: 160
         }
     },
     { timestamp: true }
