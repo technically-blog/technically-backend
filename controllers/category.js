@@ -18,9 +18,6 @@ exports.create = (req, res) => {
         }
 
         const { name, info } = fields;
-        console.log("NAME");
-        console.log(name);
-        console.log("NAME");
         if (!name || name.length===0) {
             return res.status(400).json({
                 error: 'Name is required!'
@@ -99,8 +96,8 @@ exports.read = (req, res) => {
                     });
                 }
                 Blog.find({ categories: category })
-                .sort({'updatedAt': 1})
-                .limit(3)
+                .sort({'updatedAt': -1})
+                .limit(2)
                 .populate('postedBy', '_id name username')
                 .select('title slug postedBy createdAt updatedAt')
                 .exec((err, topThree) => {
@@ -157,8 +154,8 @@ exports.trending = (req, res) => {
         }
         
         Blog.find({ categories: category })
-        .sort({'updatedAt': 1})
-        .limit(3)
+        .sort({'updatedAt': -1})
+        .limit(2)
         .populate('postedBy', '_id name username')
         .select('title slug postedBy createdAt updatedAt')
         .exec((err, blogs) => {

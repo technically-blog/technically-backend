@@ -3,8 +3,8 @@ const router = express.Router();
 const { create, list, read, remove, image, trending } = require('../controllers/category');
 
 // validators
-const { runValidation } = require('../validators');
-const { categoryCreateValidator } = require('../validators/category');
+// const { runValidation } = require('../validators');
+// const { categoryCreateValidator } = require('../validators/category');
 const { requireSignin, adminMiddleware } = require('../controllers/auth');
 
 router.post('/category', requireSignin, adminMiddleware, create);

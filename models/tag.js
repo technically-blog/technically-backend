@@ -6,12 +6,21 @@ const tagSchema = new mongoose.Schema(
             type: String,
             trim: true,
             required: true,
-            maxlength: 32
+            max: 32
         },
         slug: {
             type: String,
             unique: true,
             index: true
+        },
+        image: {
+            data: Buffer,
+            contentType: String
+        },
+        info: {
+            type: String,
+            required: true,
+            max: 160
         }
     },
     { timestamps: true }
